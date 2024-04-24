@@ -1,0 +1,58 @@
+version: '3.7'
+
+services:
+  app:
+    container_name: app
+    image: app_image
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/src
+    ports:
+      - "16000:8000"
+    depends_on:
+      - app_db
+      - redis
+      - rabbitmq
+  app_db:
+    container_name: app_db
+    hostname: app_db
+    image: library/postgres:14.1
+    env_file:
+      - .env
+    volumes:
+      - app_pg_data:/var/lib/postgresql/data
+      - app_pg_data_backups:/backups
+      - ./scripts/postgres:/scripts
+    ports:
+      - "65432:5432"
+  redis:
+    image: redis:6.2-alpine
+    hostname: redis
+    container_name: app_redis
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD"
+    ports:
+      - 36379:6379
+    env_file:
+      - .env
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3-management
+    hostname: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - .env
+volumes:
+  app_pg_data:
+    driver: "local"
+  app_pg_data_backups:
+    driver: "local"
+
+networks:
+  default:
+    name: app_main
