@@ -39,7 +39,7 @@ async def create_user(user: AuthUser) -> dict[str, Any] | None:
         logging.exception(e)
     except RedisError:
         logging.exception('Redis connection is failed')
-    return result
+    return result # noqa
 
 
 async def get_user_by_id(user_id: int) -> dict[str, Any] | None:
@@ -92,7 +92,7 @@ async def update_user(id, params_to_change) -> dict[str, Any] | None:
         logging.exception(e)
     except RedisError:
         logging.exception('Redis connection is failed')
-    return result
+    return result # noqa
 
 
 async def get_user_by_email(email: str) -> dict[str, Any] | None:
